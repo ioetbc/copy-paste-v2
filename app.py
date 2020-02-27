@@ -63,8 +63,7 @@ class RunApp(rumps.App):
                                 print('LOCK SCREEN')
                                 cap.release()
                                 cv2.destroyAllWindows()
-                                sleep_cmd = """osascript -e 'ignoring application responses' -e 'tell application "Finder" to sleep' -e end"""
-                                os.system(sleep_cmd)
+                                os.system("/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend")
                                 break
 
                         # cv2.imshow('img', img)
@@ -77,9 +76,4 @@ class RunApp(rumps.App):
         initiateLock()
 
 if __name__ == "__main__":
-    RunApp("🤓").run()
-
-# def run():
-
-
-# run()
+    RunApp("🙈").run()
