@@ -6,7 +6,7 @@ import rumps
 import os.path
 
 class RunApp(rumps.App):
-    @rumps.clicked("Preferences")
+    @rumps.clicked("Run Work Lock")
     def prefs(self, _):
         def initiateLock():
             while True:
@@ -75,12 +75,9 @@ class RunApp(rumps.App):
                         if k == 27:
                             break
         initiateLock()
-    @rumps.clicked("Say hi")
-    def sayhi(self, _):
-        rumps.notification("Awesome title", "amazing subtitle", "hi!!1")
 
 if __name__ == "__main__":
-    RunApp("Awesome App").run()
+    RunApp("🤓").run()
 
 # def run():
 
