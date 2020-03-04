@@ -6,7 +6,7 @@ import rumps
 import os.path
 
 class RunApp(rumps.App):
-    @rumps.clicked("Run Work Lock")
+    @rumps.clicked("Run WorkLock")
     def prefs(self, _):
         def initiateLock():
             while True:
@@ -16,7 +16,7 @@ class RunApp(rumps.App):
                 str = result.read()
                 idle_time = int(str.split(".")[0])
                 print('user idle time', idle_time)
-                seconds_face_not_detected = 0
+                frames_person_not_detected = 0
 
                 if idle_time >= 3:
                     while True:
@@ -45,39 +45,37 @@ class RunApp(rumps.App):
                                 print('person_detected:', person_detected)
                                 # cv2.imshow('img', img)
 
-                                seconds_face_not_detected = 0
+                                frames_person_not_detected = 0
                                 cap.release()
                                 cv2.destroyAllWindows()
                                 print('waiting 5 seconds tobe called again if no activity')
                                 time.sleep(5)
                                 initiateLock()
-                                break
 
                         for (x, y, w, h) in profile_face:
                             # cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                             person_detected = True
                             print('face_detected profile face', person_detected)
-                            seconds_face_not_detected = 0
+                            frames_person_not_detected = 0
                             cap.release()
                             cv2.destroyAllWindows()
                             print('waiting 5 seconds tobe called again if no activity')
                             time.sleep(5)
                             initiateLock()
-                            break
 
                         if not person_detected:
-                            seconds_face_not_detected += 1
+                            frames_person_not_detected += 1
 
-                            if seconds_face_not_detected > 10:
+                            if frames_person_not_detected > 10:
                                 print('LOCK SCREEN')
                                 cap.release()
                                 cv2.destroyAllWindows()
                                 os.system("/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend")
-                                break
+                                return
 
                         # cv2.imshow('img', img)
                         print('FACE_DETECTED', person_detected)
-                        print('seconds_face_not_detected', seconds_face_not_detected)
+                        print('frames_person_not_detected', frames_person_not_detected)
 
                         k = cv2.waitKey(30) & 0xff
                         if k == 27:
