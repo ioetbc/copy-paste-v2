@@ -1,86 +1,58 @@
-import os, time
-import cv2
-import numpy as np
-import inspect
 import rumps
-import os.path
+import pyperclip
+import time
+import sys
+import os
+from tkinter import *
 
-class RunApp(rumps.App):
-    @rumps.clicked("Run WorkLock")
-    def prefs(self, _):
-        def initiateLock():
+sys.path.append(os.path.abspath("SO_site-packages"))
+root = Tk()
+root.geometry("400x400")
+
+class AwesomeStatusBarApp(rumps.App):
+    @rumps.clicked('start')
+    def run_app(self, _):
+        def check_for_new_values():
+            options = ['first item']
+            recent_value = ''
+
             while True:
-                time.sleep(1)
-                cmd = "ioreg -c IOHIDSystem | perl -ane 'if (/Idle/) {$idle=(pop @F)/1000000000; print $idle}'"
-                result = os.popen(cmd)
-                str = result.read()
-                idle_time = int(str.split(".")[0])
-                print('user idle time', idle_time)
-                frames_person_not_detected = 0
+                tmp_value = pyperclip.paste()
+                print(options)
 
-                if idle_time >= 3:
-                    while True:
-                        front_face_cascade = cv2.CascadeClassifier('/Applications/dist/haarcascade_frontalface_default.xml')
-                        profile_face_cascade = cv2.CascadeClassifier('/Applications/dist/haarcascade_profileface.xml')
-                        eye_cascade = cv2.CascadeClassifier('/Applications/dist/haarcascade_eye.xml')
+                if tmp_value != recent_value:
+                    recent_value = tmp_value
+                    options.append(tmp_value)
 
-                        cap = cv2.VideoCapture(0)
-                        ret, img = cap.read()
-                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                time.sleep(3)
+        check_for_new_values()
 
-                        front_face = front_face_cascade.detectMultiScale(gray, 1.3, 5)
-                        profile_face = profile_face_cascade.detectMultiScale(gray, 1.3, 5)
-                        eye = eye_cascade.detectMultiScale(gray, 1.3, 5)
+    # @rumps.clicked('dropdown')
+    # def run_dropdown(self, _):
+    #     def check_for_new_values():
+    #         recent_value = ''
+    #         options = ['first item', 'second item']
+    #         clicked = StringVar()
+    #         clicked.set(options[0])
+    #         drop = OptionMenu(root, clicked, *options)
 
-                        person_detected = False
 
-                        for (x, y, w, h) in front_face:
-                            # cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                            print('front face detected')
-                            # cv2.imshow('img', img)
-                            for (x, y, w, h) in eye:
-                                # cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                                person_detected = True
-                                print('eye detected')
-                                print('person_detected:', person_detected)
-                                # cv2.imshow('img', img)
+    #         while True:
+    #             tmp_value = pyperclip.paste()
+    #             print(options)
 
-                                frames_person_not_detected = 0
-                                cap.release()
-                                cv2.destroyAllWindows()
-                                print('waiting 5 seconds tobe called again if no activity')
-                                time.sleep(5)
-                                initiateLock()
+    #             if tmp_value != recent_value:
+    #                 recent_value = tmp_value
+    #                 options.append(tmp_value)
 
-                        for (x, y, w, h) in profile_face:
-                            # cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                            person_detected = True
-                            print('face_detected profile face', person_detected)
-                            frames_person_not_detected = 0
-                            cap.release()
-                            cv2.destroyAllWindows()
-                            print('waiting 5 seconds tobe called again if no activity')
-                            time.sleep(5)
-                            initiateLock()
+    #             time.sleep(3)
+    #             drop.pack()
+    #             root.mainloop()
+    #     check_for_new_values()
 
-                        if not person_detected:
-                            frames_person_not_detected += 1
 
-                            if frames_person_not_detected > 10:
-                                print('LOCK SCREEN')
-                                cap.release()
-                                cv2.destroyAllWindows()
-                                os.system("/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend")
-                                return
 
-                        # cv2.imshow('img', img)
-                        print('FACE_DETECTED', person_detected)
-                        print('frames_person_not_detected', frames_person_not_detected)
-
-                        k = cv2.waitKey(30) & 0xff
-                        if k == 27:
-                            break
-        initiateLock()
+        
 
 if __name__ == "__main__":
-    RunApp("🙈").run()
+    AwesomeStatusBarApp("Awesome App").run()
